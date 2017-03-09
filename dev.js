@@ -1,53 +1,36 @@
 // Dependencies
 const { Client, SQLiteProvider } = require('discord.js-commando');
-const { RichEmbed } = require('discord.js');
 const winston = require('winston');
-const path = require('path');
 const sqlite = require('sqlite');
-const fs = require('fs');
-const { stripIndents } = require('common-tags');
-
-// Configuration
+const path = require('path');
 const config = require('./data/config');
-const censorship = require('./data/censorship');
-let home = '';
-let welcome = {};
+
+// This one is for testing new changes to the bot before deploying onto the real bot.
 
 // Client set up
 const qasi = new Client({
     owner: config.auth.ownerID,
-    commandPrefix: '?'
+    commandPrefix: config.prefix
 });
 qasi.setProvider(
-    sqlite.open(path.join(__dirname + '/data', 'dbqasi.sqlite3'))
+    sqlite.open(path.join(__dirname + '/data', 'devqasi.sqlite3'))
         .then(db => new SQLiteProvider(db))
 );
 qasi.registry.registerGroups([
-    ['booru', 'Image Search']
 ]).registerDefaults().registerCommandsIn(path.join(__dirname, 'dev'));
 
 // Event handlers
 qasi
     .once('ready', () => {
-        winston.info(`QASI initialized. Logged in as ${qasi.user.username}#${qasi.user.discriminator}.`);
-        home = qasi.channels.get(config.home);
+        winston.info(`qasi initialized. Logged in as ${qasi.user.username}#${qasi.user.discriminator}.`);
     })
     .on('disconnect', () => {
-        winston.warn('QASI disconnected from Discord.')
+        winston.warn('qasi disconnected from Discord.')
     })
     .on('reconnecting', () => {
-        winston.warn('QASI reconnecting to Discord.')
+        winston.warn('qasi reconnecting to Discord.')
     })
     .on('error', winston.error)
-    .on('warn', winston.warn)
-    .on('messageDelete', async message => {
-        home.sendEmbed(new RichEmbed()
-            .setDescription(stripIndents`
-                **Message from ${message.author} deleted in ${message.channel}.**
-                ${message.content}
-            `)
-            .setColor(8700043)
-        );
-        console.log(message);
-    });
+    .on('warn', winston.warn);
+
 qasi.login(config.auth.token);
