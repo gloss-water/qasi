@@ -92,6 +92,7 @@ qasi
         
         // Guild messages from here on.
 
+        if (message.guild.id !== config.guild) return;
         // Check if any disallowed words from unexempt users and tell on them.
         if (!await isExempt(message)) {
             if (bannedWords(message.cleanContent.toLowerCase())) {
@@ -122,8 +123,11 @@ qasi
         }
     })
     .on('messageDelete', async message => {
+        if (message.guild) {
+            if (message.guild.id !== config.guild) return;
+        }
         if (message.author.id === qasi.user.id) return;
-        if (message.channel.id === home.id) return;
+        if (message.channel.id === home.id || message.channel.id === '223941383583432705') return;
         if (await isExempt(message)) return;
         home.sendEmbed(new RichEmbed()
             .setDescription(stripIndents`
@@ -134,7 +138,7 @@ qasi
         );
     })
     .on('guildMemberAdd', member => {
-        if (!member.guild.id === config.guild) return;
+        if (member.guild.id !== config.guild) return;
         home.sendMessage(`${member} has joined the server.`);
         if (welcome[member.id] === undefined) {
             member.sendMessage(stripIndents`
@@ -147,13 +151,15 @@ qasi
         }
     })
     .on('guildMemberRemove', member => {
-        if (!member.guild.id === config.guild) return;
+        if (member.guild.id !== config.guild) return;
         home.sendMessage(`${member} (${member.displayName}) has left or been kicked from the server.`);
     })
     .on('guildBanAdd', (guild, user) => {
+        if (guild.id !== config.guild) return;
         home.sendMessage(`${user} has been banned from the server.`);
     })
     .on('guildBanRemove', (guild, user) => {
+        if (guild.id !== config.guild) return;
         home.sendMessage(`${user} has been unbanned from the server.`);
     })
     .on('disconnect', () => {
