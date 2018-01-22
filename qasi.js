@@ -96,11 +96,9 @@ qasi
         // Check if any disallowed words from unexempt users and tell on them.
         if (!await isExempt(message)) {
             if (bannedWords(message.cleanContent.toLowerCase())) {
-                home.sendEmbed(new RichEmbed()
-                    .setDescription(stripIndents`
-                        **Banning ${message.author} for usage of a banned word in ${message.channel}.**
-                        ${message.content}
-                    `)
+                home.send(new RichEmbed()
+                    .setTitle('Banning ${message.author} for usage of a banned word in ${message.channel}.')
+                    .setDescription(message.content)
                     .setColor(16711680)
                 );
                 if (message.member.bannable) message.member.ban();
@@ -109,9 +107,10 @@ qasi
             }
             
             if (warnedWords(message.cleanContent.toLowerCase())) {
-                home.sendEmbed(new RichEmbed()
+                home.send(new RichEmbed()
+                    .setTitle('🚨 Funny Alert 🚨')
                     .setDescription(stripIndents`
-                        **🚨 Funny Alert 🚨 ${message.author} in ${message.channel}.**
+                        ${message.author} in ${message.channel}**
                         ${message.content}
                     `)
                     .setColor(16737330)
@@ -129,7 +128,7 @@ qasi
         if (message.author.id === qasi.user.id) return;
         if (message.channel.id === home.id || message.channel.id === '223941383583432705') return;
         if (await isExempt(message)) return;
-        home.sendEmbed(new RichEmbed()
+        home.send(new RichEmbed()
             .setDescription(stripIndents`
                 **Message from ${message.author} deleted in ${message.channel}.**
                 ${message.content}
@@ -151,11 +150,11 @@ qasi
         if (welcome[member.id] === undefined) {
             member.sendMessage(stripIndents`
                 hello ^_^ welcome to the Nyanners server. please remember to check out <#183028007403913216> if you haven't already!
-            `).then(member.sendMessage(stripIndents`
+            `).then(member.send(stripIndents`
                 oh, by the way: would you like me to post a welcome message for you in <#182712193287061504>?
-            `)).then(member.sendMessage(`just respond here with 'welcome' any time in the future and i'll do it. :)`));
+            `)).then(member.send(`just respond here with 'welcome' any time in the future and i'll do it. :)`));
         } else {
-            home.sendMessage(`Almost sent a welcome message to ${member}, but they have been here before or something :thinking: `)
+            home.send(`Almost sent a welcome message to ${member}, but they have been here before or something :thinking: `)
         }
     })
     .on('guildMemberRemove', member => {
@@ -170,11 +169,11 @@ qasi
     })
     .on('guildBanAdd', (guild, user) => {
         if (guild.id !== config.guild) return;
-        home.sendMessage(`${user} (${user.username}) has been banned from the server.`);
+        home.send(`${user} (${user.username}) has been banned from the server.`);
     })
     .on('guildBanRemove', (guild, user) => {
         if (guild.id !== config.guild) return;
-        home.sendMessage(`${user} (${user.username}) has been unbanned from the server.`);
+        home.send(`${user} (${user.username}) has been unbanned from the server.`);
     })
     .on('disconnect', () => {
         winston.warn('QASI disconnected from Discord.')
