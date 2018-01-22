@@ -139,7 +139,15 @@ qasi
     })
     .on('guildMemberAdd', member => {
         if (member.guild.id !== config.guild) return;
-        home.sendMessage(`${member} has joined the server.`);
+        
+        home.send(new RichEmbed()
+            .setTitle(`${member.user.username} has joined the server.`)
+            .addField('Ping', `${member}`)
+            .addField('Tag', `${member.user.tag}`)
+            .setImage(member.user.displayAvatarURL)
+            .setTimestamp(new Date())
+            .setColor(8700043));
+
         if (welcome[member.id] === undefined) {
             member.sendMessage(stripIndents`
                 hello ^_^ welcome to the Nyanners server. please remember to check out <#183028007403913216> if you haven't already!
