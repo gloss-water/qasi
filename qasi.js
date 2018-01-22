@@ -160,15 +160,21 @@ qasi
     })
     .on('guildMemberRemove', member => {
         if (member.guild.id !== config.guild) return;
-        home.sendMessage(`${member} (${member.displayName}) has left or been kicked from the server.`);
+        home.send(new RichEmbed()
+            .setTitle(`${member.user.username} (${member.displayName}) has left the server.`)
+            .addField('Ping', `${member}`)
+            .addField('Tag', `${member.user.tag}`)
+            .setImage(member.user.displayAvatarURL)
+            .setTimestamp(new Date())
+            .setColor(8700043));
     })
     .on('guildBanAdd', (guild, user) => {
         if (guild.id !== config.guild) return;
-        home.sendMessage(`${user} has been banned from the server.`);
+        home.sendMessage(`${user} (${user.username}) has been banned from the server.`);
     })
     .on('guildBanRemove', (guild, user) => {
         if (guild.id !== config.guild) return;
-        home.sendMessage(`${user} has been unbanned from the server.`);
+        home.sendMessage(`${user} (${user.username}) has been unbanned from the server.`);
     })
     .on('disconnect', () => {
         winston.warn('QASI disconnected from Discord.')
